@@ -7,9 +7,9 @@ INSERT INTO vets VALUES (4, 'Rafael', 'Ortega');
 INSERT INTO vets VALUES (5, 'Henry', 'Stevens');
 INSERT INTO vets VALUES (6, 'Sharon', 'Jenkins');
 
-INSERT INTO specialties VALUES (1, 'radiology');
-INSERT INTO specialties VALUES (2, 'surgery');
-INSERT INTO specialties VALUES (3, 'dentistry');
+INSERT INTO specialties VALUES (1, 'radiology', 'santa anita', 10, 16);
+INSERT INTO specialties VALUES (2, 'surgery', 'santa anita', 8, 19);
+INSERT INTO specialties VALUES (3, 'dentistry', 'santa anita', 8, 20);
 
 INSERT INTO vet_specialties VALUES (2, 1);
 INSERT INTO vet_specialties VALUES (3, 2);

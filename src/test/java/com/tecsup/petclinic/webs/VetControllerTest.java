@@ -2,6 +2,7 @@ package com.tecsup.petclinic.webs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.tecsup.petclinic.domain.SpecialtyTO;
 import com.tecsup.petclinic.domain.VetTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ public class VetControllerTest {
     @Test
     public void testFindVetOK() throws Exception {
 
-        String FIRST_NAME = "James";
+        String FIRST_NAME = "Sebastián";
 
         mockMvc.perform(get("/vets/1"))  // Object must be BASIL
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -164,5 +165,41 @@ public class VetControllerTest {
         mockMvc.perform(delete("/vets/" + id))
                 /*.andDo(print())*/
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteVetById() throws Exception {
+        int id = 6;
+        mockMvc.perform(delete("/vets/" + id))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateVetById() throws Exception {
+
+        int id = 1;
+
+        String UP_FIRST_NAME = "Sebastián";
+        String UP_LAST_NAME = "Nose:v";
+
+        VetTO upVetTO = new VetTO();
+        upVetTO.setId(id);
+        upVetTO.setFirstName(UP_FIRST_NAME);
+        upVetTO.setLastName(UP_LAST_NAME);
+
+        mockMvc.perform(put("/vets/"+id)
+                        .content(om.writeValueAsString(upVetTO))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/vets/" + id))  //
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id)))
+                .andExpect(jsonPath("$.firstName", is(UP_FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", is(UP_LAST_NAME)));
+
     }
 }

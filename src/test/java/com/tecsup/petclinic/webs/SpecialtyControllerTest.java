@@ -3,6 +3,7 @@ package com.tecsup.petclinic.webs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.tecsup.petclinic.domain.SpecialtyTO;
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class SpecialtyControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void testFindAllOwners() throws Exception {
+    public void testFindAllSpecialties() throws Exception {
 
         //int NRO_RECORD = 73;
         int ID_FIRST_RECORD = 1;
@@ -52,9 +53,9 @@ public class SpecialtyControllerTest {
     @Test
     public void testFindSpecialtyOK() throws Exception {
 
-        String NAME = "radiology";
+        String NAME = "Immunology";
 
-        mockMvc.perform(get("/specialties/1"))  // Object must be BASIL
+        mockMvc.perform(get("/specialties/1"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -85,8 +86,8 @@ public class SpecialtyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is(NAME)))
                 .andExpect(jsonPath("$.office", is(OFFICE)))
-                .andExpect(jsonPath("$.hopen", is(OPEN)))  // Cambiado a 'hopen' en minúscula
-                .andExpect(jsonPath("$.hclose", is(CLOSE))); // Cambiado a 'hclose' en minúscula
+                .andExpect(jsonPath("$.hopen", is(OPEN)))
+                .andExpect(jsonPath("$.hclose", is(CLOSE)));
     }
 
     /**
@@ -178,7 +179,48 @@ public class SpecialtyControllerTest {
 
         // DELETE
         mockMvc.perform(delete("/specialties/" + id))
-                /*.andDo(print())*/
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteSpecialtyById() throws Exception {
+        int id = 3;
+        mockMvc.perform(delete("/specialties/" + id))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateSpecialtyById() throws Exception {
+
+        int id = 1;
+
+        String UP_NAME = "Immunology";
+        String UP_OFFICE = "San juan";
+        int UP_HOPEN = 8;
+        int UP_HCLOSE = 20;
+
+        SpecialtyTO upSpecialtyTO = new SpecialtyTO();
+        upSpecialtyTO.setId(id);
+        upSpecialtyTO.setName(UP_NAME);
+        upSpecialtyTO.setOffice(UP_OFFICE);
+        upSpecialtyTO.setHOpen(UP_HOPEN);
+        upSpecialtyTO.setHClose(UP_HCLOSE);
+
+        mockMvc.perform(put("/specialties/"+id)
+                        .content(om.writeValueAsString(upSpecialtyTO))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/specialties/" + id))  //
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id)))
+                .andExpect(jsonPath("$.name", is(UP_NAME)))
+                .andExpect(jsonPath("$.office", is(UP_OFFICE)))
+                .andExpect(jsonPath("$.hopen", is(UP_HOPEN)))
+                .andExpect(jsonPath("$.hclose", is(UP_HCLOSE)));
+
     }
 }

@@ -52,7 +52,7 @@ public class OwnerControllerTest {
     @Test
     public void testFindOwnerOK() throws Exception {
 
-        String FIRST_NAME = "George";
+        String FIRST_NAME = "Carlos";
         String LAST_NAME = "Basil";
         String ADDRESS = "Calle 1";
         String CITY = "Santo Domingo";
@@ -197,5 +197,50 @@ public class OwnerControllerTest {
         mockMvc.perform(delete("/owners/" + id))
                 /*.andDo(print())*/
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteOwnerById() throws Exception {
+        int id = 10;
+        mockMvc.perform(delete("/owners/" + id))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateSpecialtyById() throws Exception {
+
+        int id =1;
+
+        String UP_FIRST_NAME = "Carlos";
+        String UP_LAST_NAME = "Jose";
+        String UP_ADDRESS = "Calle 2";
+        String UP_CITY = "San Isidro";
+        String UP_TELEPHONE = "987654321";
+
+        OwnerTO upOwnerTO = new OwnerTO();
+        upOwnerTO.setId(id);
+        upOwnerTO.setFirstName(UP_FIRST_NAME);
+        upOwnerTO.setLastName(UP_LAST_NAME);
+        upOwnerTO.setAddress(UP_ADDRESS);
+        upOwnerTO.setCity(UP_CITY);
+        upOwnerTO.setTelephone(UP_TELEPHONE);
+
+        mockMvc.perform(put("/owners/"+id)
+                        .content(om.writeValueAsString(upOwnerTO))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/owners/" + id))  //
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id)))
+                .andExpect(jsonPath("$.firstName", is(UP_FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", is(UP_LAST_NAME)))
+                .andExpect(jsonPath("$.address", is(UP_ADDRESS)))
+                .andExpect(jsonPath("$.city", is(UP_CITY)))
+                .andExpect(jsonPath("$.telephone", is(UP_TELEPHONE)));
+
     }
 }
